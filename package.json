@@ -1,0 +1,26 @@
+{
+  "name": "instapost",
+  "version": "1.0.0",
+  "description": "SaaS לתזמון ופרסום אוטומטי של תמונות לאינסטגרם עבור עסקים",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "luxon": "^3.5.0",
+    "multer": "^2.0.0",
+    "node-cron": "^3.0.3",
+    "sharp": "^0.33.5"
+  }
+}

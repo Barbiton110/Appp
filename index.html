@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InstaPost · שיווק אוטומטי לאינסטגרם</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- התחברות / הרשמה -->
+  <section id="auth-view" class="auth hidden">
+    <div class="auth-card">
+      <div class="brand"><span class="logo">◎</span> InstaPost</div>
+      <p class="muted">מתזמנים פעם אחת - והפוסטים עולים לאינסטגרם לבד, כל יום.</p>
+      <div class="seg">
+        <button class="seg-btn active" data-auth="login">התחברות</button>
+        <button class="seg-btn" data-auth="register">הרשמה</button>
+      </div>
+      <form id="auth-form">
+        <label class="reg-only hidden">שם העסק
+          <input name="business_name" autocomplete="organization" />
+        </label>
+        <label>אימייל
+          <input name="email" type="email" required autocomplete="email" />
+        </label>
+        <label>סיסמה
+          <input name="password" type="password" required minlength="8" autocomplete="current-password" />
+        </label>
+        <button class="btn primary wide" type="submit" id="auth-submit">התחברות</button>
+        <p class="error" id="auth-error"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- האפליקציה -->
+  <section id="app-view" class="hidden">
+    <header class="topbar">
+      <div class="brand"><span class="logo">◎</span> InstaPost</div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="compose">פוסט חדש</button>
+        <button class="tab" data-tab="schedule">לוח תזמונים</button>
+        <button class="tab" data-tab="settings">הגדרות</button>
+      </nav>
+      <button class="btn ghost small" id="logout">יציאה</button>
+    </header>
+    <div id="banner" class="banner hidden"></div>
+
+    <main>
+      <!-- יצירת פוסט -->
+      <div class="panel" id="tab-compose">
+        <div class="card">
+          <h2>1. לאיזה חשבון?</h2>
+          <div id="account-picker"></div>
+        </div>
+
+        <div class="card">
+          <h2>2. תמונות</h2>
+          <div class="seg">
+            <button class="seg-btn active" data-src="upload">העלאה</button>
+            <button class="seg-btn" data-src="ai">יצירה ב-AI</button>
+          </div>
+          <div id="src-upload">
+            <label class="drop" id="drop">
+              <input type="file" id="file-input" accept="image/*" multiple hidden />
+              <span>לחצו או גררו לכאן תמונות (עד 10)</span>
+            </label>
+          </div>
+          <div id="src-ai" class="hidden">
+            <textarea id="ai-image-prompt" rows="2" placeholder="למשל: כוס קפה הפוך על שולחן עץ בבוקר שמשי, אווירת בית קפה שכונתי"></textarea>
+            <button class="btn" id="ai-image-btn">✨ צור תמונה</button>
+            <p class="muted small" id="ai-image-note"></p>
+          </div>
+          <div class="thumbs" id="selected-media"></div>
+        </div>
+
+        <div class="card">
+          <h2>3. כיתוב</h2>
+          <div class="row">
+            <input id="ai-topic" placeholder="נושא לפוסט (למשל: מבצע סוף שבוע 1+1)" />
+            <button class="btn" id="ai-caption-btn">✨ כתוב עם AI</button>
+          </div>
+          <textarea id="caption" rows="6" maxlength="2200" placeholder="הכיתוב שיופיע מתחת לתמונה..."></textarea>
+          <div class="muted small"><span id="caption-count">0</span>/2200</div>
+        </div>
+
+        <div class="card">
+          <h2>4. מתי לפרסם?</h2>
+          <div class="seg">
+            <button class="seg-btn active" data-when="datetime">תאריך ושעה</button>
+            <button class="seg-btn" data-when="queue">תור יומי</button>
+          </div>
+          <div id="when-datetime">
+            <input type="datetime-local" id="scheduled-at" />
+            <p class="muted small">אם בחרתם כמה תמונות - כל תמונה תעלה יום אחרי הקודמת, באותה שעה.</p>
+          </div>
+          <div id="when-queue" class="hidden">
+            <p class="muted">כל תמונה תיכנס ליום הפנוי הבא בשעה <b id="queue-time">10:00</b> (ניתן לשנות בהגדרות).</p>
+          </div>
+          <button class="btn primary wide" id="schedule-btn">תזמן פרסום</button>
+          <p class="error" id="compose-error"></p>
+        </div>
+      </div>
+
+      <!-- לוח תזמונים -->
+      <div class="panel hidden" id="tab-schedule">
+        <div class="filters seg">
+          <button class="seg-btn active" data-filter="upcoming">מתוזמנים</button>
+          <button class="seg-btn" data-filter="published">פורסמו</button>
+          <button class="seg-btn" data-filter="failed">נכשלו</button>
+        </div>
+        <div id="posts-list"></div>
+      </div>
+
+      <!-- הגדרות -->
+      <div class="panel hidden" id="tab-settings">
+        <div class="card">
+          <h2>חשבונות אינסטגרם</h2>
+          <p class="muted small">נדרש חשבון אינסטגרם מקצועי (Business או Creator).</p>
+          <div id="accounts-list"></div>
+          <div class="row">
+            <a class="btn primary" href="/auth/instagram" id="connect-ig">+ חבר חשבון אינסטגרם</a>
+            <button class="btn ghost hidden" id="demo-account">הוסף חשבון דמו (מצב בדיקה)</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>פרטי העסק</h2>
+          <p class="muted small">ה-AI משתמש בפרטים האלה כדי לכתוב כיתובים וליצור תמונות שמתאימים לעסק.</p>
+          <form id="profile-form">
+            <label>שם העסק <input name="business_name" /></label>
+            <label>תיאור העסק
+              <textarea name="business_description" rows="4" placeholder="מה העסק עושה, למי הוא פונה, מה מייחד אותו, סגנון הדיבור..."></textarea>
+            </label>
+            <div class="row">
+              <label>שעת פרסום יומית <input name="daily_time" type="time" /></label>
+              <label>אזור זמן <input name="timezone" placeholder="Asia/Jerusalem" /></label>
+            </div>
+            <button class="btn primary" type="submit">שמירה</button>
+            <span class="muted small" id="profile-saved"></span>
+          </form>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
